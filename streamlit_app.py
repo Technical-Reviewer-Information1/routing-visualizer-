@@ -310,18 +310,20 @@ def create_network_graph(simulator: NetworkSimulator, highlight_path: List[str] 
     # ノードの位置とデータを準備
     node_trace_routers = go.Scatter(
         x=[], y=[], mode='markers+text',
-        marker=dict(size=30, color='lightblue', line=dict(width=2, color='darkblue')),
+        marker=dict(size=35, color='#3498DB', line=dict(width=3, color='#2C3E50')),
         text=[], textposition="middle center",
         hoverinfo='text', hovertext=[],
-        name="ルーター"
+        name="ルーター",
+        textfont=dict(color='white', size=12, family='Arial Black')
     )
     
     node_trace_networks = go.Scatter(
         x=[], y=[], mode='markers+text',
-        marker=dict(size=25, color='lightgreen', line=dict(width=2, color='darkgreen'), symbol='square'),
+        marker=dict(size=30, color='#2ECC71', line=dict(width=3, color='#27AE60'), symbol='square'),
         text=[], textposition="middle center",
         hoverinfo='text', hovertext=[],
-        name="ネットワーク"
+        name="ネットワーク",
+        textfont=dict(color='white', size=10, family='Arial Black')
     )
     
     # エッジ（リンク）を描画
@@ -340,7 +342,7 @@ def create_network_graph(simulator: NetworkSimulator, highlight_path: List[str] 
     
     edge_trace = go.Scatter(
         x=edge_x, y=edge_y, mode='lines',
-        line=dict(width=2, color='gray'),
+        line=dict(width=3, color='#2C3E50'),
         hoverinfo='none',
         showlegend=False
     )
@@ -378,7 +380,7 @@ def create_network_graph(simulator: NetworkSimulator, highlight_path: List[str] 
         
         highlight_edge_trace = go.Scatter(
             x=highlight_edge_x, y=highlight_edge_y, mode='lines',
-            line=dict(width=4, color='red'),
+            line=dict(width=6, color='#E74C3C'),
             hoverinfo='none',
             showlegend=False
         )
@@ -390,7 +392,7 @@ def create_network_graph(simulator: NetworkSimulator, highlight_path: List[str] 
         x, y = simulator.nodes[current_node].position
         current_node_trace = go.Scatter(
             x=[x], y=[y], mode='markers',
-            marker=dict(size=40, color='yellow', line=dict(width=3, color='orange')),
+            marker=dict(size=45, color='#F39C12', line=dict(width=4, color='#E67E22')),
             showlegend=False, hoverinfo='none'
         )
         fig.add_trace(current_node_trace)
@@ -414,7 +416,7 @@ def create_network_graph(simulator: NetworkSimulator, highlight_path: List[str] 
         )],
         xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
         yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-        plot_bgcolor='white',
+        plot_bgcolor='#F8F9FA',
         height=400
     )
     
@@ -489,7 +491,7 @@ if 'quiz_submitted' not in st.session_state:
     st.session_state.quiz_submitted = False
 
 # メインUI
-col1, col2, col3 = st.columns([2, 2, 2])
+col1, col2 = st.columns([1, 1])
 
 with col1:
     st.subheader("🚀 パケット送信シミュレーション")
@@ -544,24 +546,6 @@ with col2:
         if st.session_state.rip_stages:
             current_stage = st.session_state.rip_stages[st.session_state.rip_current_stage]
             st.info(f"**段階 {current_stage['stage']}**: {current_stage['description']}")
-
-with col3:
-    st.subheader("❓ 学習モード")
-    
-    if not st.session_state.quiz_mode:
-        if st.button("📝 穴埋め問題", type="secondary"):
-            quiz_questions = st.session_state.simulator.generate_quiz_question()
-            st.session_state.current_quiz = random.choice(quiz_questions)
-            st.session_state.quiz_mode = True
-            st.session_state.quiz_submitted = False
-            st.session_state.quiz_answer = None
-            st.session_state.simulator.add_event("穴埋め問題モードを開始しました")
-    else:
-        if st.button("🏠 メインに戻る", type="secondary"):
-            st.session_state.quiz_mode = False
-            st.session_state.current_quiz = None
-            st.session_state.quiz_submitted = False
-            st.session_state.quiz_answer = None
 
 # ネットワーク図の表示
 st.subheader("🌐 ネットワーク構成")
@@ -759,6 +743,37 @@ if st.session_state.packet_animation_active:
             st.session_state.packet_animation_active = False
             st.session_state.simulator.add_event("パケット送信完了")
             st.success("パケットが目的地に到着しました！")
+
+# 学習モードセクション
+st.divider()
+st.subheader("📚 学習モード")
+
+# 穴埋め問題ボタンと説明
+col_quiz1, col_quiz2 = st.columns([3, 1])
+
+with col_quiz1:
+    st.markdown("""
+    **穴埋め問題で理解度をチェック！**  
+    ルーティングテーブルの各項目について、実際の問題を解きながら理解を深めましょう。
+    """)
+
+with col_quiz2:
+    if not st.session_state.quiz_mode:
+        if st.button("📝 穴埋め問題開始", type="primary", use_container_width=True):
+            quiz_questions = st.session_state.simulator.generate_quiz_question()
+            st.session_state.current_quiz = random.choice(quiz_questions)
+            st.session_state.quiz_mode = True
+            st.session_state.quiz_submitted = False
+            st.session_state.quiz_answer = None
+            st.session_state.simulator.add_event("穴埋め問題モードを開始しました")
+            st.rerun()
+    else:
+        if st.button("🏠 メインに戻る", type="secondary", use_container_width=True):
+            st.session_state.quiz_mode = False
+            st.session_state.current_quiz = None
+            st.session_state.quiz_submitted = False
+            st.session_state.quiz_answer = None
+            st.rerun()
 
 st.divider()
 st.markdown("*このシミュレーターは教育目的で作成されました。実際のネットワーク動作とは異なる場合があります。*")
