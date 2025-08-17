@@ -776,4 +776,3 @@ with col_quiz2:
             st.rerun()
 
 st.divider()
-st.markdown("*このシミュレーターは教育目的で作成されました。実際のネットワーク動作とは異なる場合があります。*")
