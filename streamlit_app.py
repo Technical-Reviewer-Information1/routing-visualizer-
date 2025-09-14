@@ -10,13 +10,13 @@ from typing import Dict, List, Tuple, Optional
 import copy
 
 st.set_page_config(
-    page_title="ルーティング可視化シミュレーター",
+    page_title="ルーティングテーブル",
     page_icon="🌐",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-st.title("🌐 ルーティング可視化シミュレーター")
+st.title("ルーティングテーブル（pp.117-118）")
 st.caption("Created by Dit-Lab.(Daiki ITO)")
 st.caption("Supported by Tomoaki ATSUMI")
 
