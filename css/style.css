@@ -1,0 +1,244 @@
+/* =========================================================
+   情報Ⅰ 共通テスト対策問題集 — Web アプリ共通スタイル
+   紙面（参考書）に寄せた設計。装飾色は使わず、色は意味を持つときだけ。
+   ========================================================= */
+
+:root{
+  --paper:#ffffff;
+  --paper-2:#faf9f6;      /* うすい紙 */
+  --bg:#f0eeea;           /* 台紙 */
+  --ink:#15181c;
+  --ink-2:#4a4f57;
+  --ink-3:#858a92;
+  --rule:#d7d3cb;         /* 罫線 */
+  --rule-2:#e8e5df;
+  --accent:#123a6b;       /* 濃紺。主要操作と現在地だけに使う */
+  --accent-w:#e9eef6;
+  --zero:#c0392b;         /* 左＝0 */
+  --one:#1d4ed8;          /* 右＝1 */
+  --ok:#1f7a3d;   --ok-bg:#eef6f0;
+  --ng:#b3261e;   --ng-bg:#fbefee;
+  --warn:#8a5a00; --warn-bg:#fbf5e8;
+  --font:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic Medium","Yu Gothic",
+         "Noto Sans JP",Meiryo,-apple-system,BlinkMacSystemFont,sans-serif;
+  --mono:"SFMono-Regular",Menlo,Consolas,"Courier New",monospace;
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:var(--font); font-size:16px; line-height:1.85;
+  font-feature-settings:"palt" 1;
+}
+h1,h2,h3,h4{line-height:1.45; margin:0; font-weight:700}
+p{margin:0 0 .75em} p:last-child{margin-bottom:0}
+a{color:var(--accent)}
+
+/* ---------- 標題 ---------- */
+.app-header{background:var(--paper); border-bottom:3px solid var(--ink); padding:26px 20px 20px}
+.app-header .inner{max-width:960px; margin:0 auto}
+.app-header .eyebrow{
+  font-size:.75rem; font-weight:700; color:var(--ink-2); letter-spacing:.18em;
+  display:block; margin-bottom:7px;
+}
+.app-header h1{font-size:1.5rem; letter-spacing:.01em}
+.app-header .lead{font-size:.92rem; color:var(--ink-2); margin-top:9px; max-width:60ch}
+.app-header .credit{
+  font-size:.72rem; color:var(--ink-3); margin-top:14px;
+  padding-top:9px; border-top:1px solid var(--rule-2);
+}
+
+/* ---------- 版面 ---------- */
+.wrap{max-width:960px; margin:0 auto; padding:24px 16px 64px}
+.step{background:var(--paper); border:1px solid var(--rule); padding:24px 26px; margin-bottom:18px}
+.step > h2{
+  display:flex; align-items:baseline; gap:12px; font-size:1.1rem;
+  padding-bottom:9px; border-bottom:2px solid var(--ink); margin-bottom:12px;
+}
+.step > h2 .no{
+  flex:none; font-family:var(--mono); font-size:.72rem; font-weight:700;
+  background:var(--ink); color:var(--paper); padding:2px 7px; letter-spacing:.06em;
+  position:relative; top:-2px;
+}
+.step > .desc{color:var(--ink-2); font-size:.9rem; margin-bottom:18px}
+.step[hidden]{display:none}
+
+.grid{display:grid; gap:20px}
+.grid > *{min-width:0}          /* 子の中身で列が広がるのを防ぐ */
+@media(min-width:800px){ .grid.c2{grid-template-columns:1fr 1fr} }
+
+.panel{border:1px solid var(--rule-2); background:var(--paper-2); padding:15px 16px; min-width:0}
+.panel > h3{
+  font-size:.8rem; font-weight:700; color:var(--ink-2); letter-spacing:.08em;
+  margin-bottom:12px; padding-bottom:6px; border-bottom:1px solid var(--rule);
+}
+
+/* ---------- 部品 ---------- */
+.btn{
+  appearance:none; border:1px solid var(--ink-3); background:var(--paper); color:var(--ink);
+  font-family:inherit; font-size:.88rem; font-weight:700; padding:8px 14px;
+  border-radius:2px; cursor:pointer; min-height:40px; line-height:1.4;
+  transition:background .12s, border-color .12s, color .12s;
+}
+.btn:hover:not(:disabled){background:var(--accent-w); border-color:var(--accent); color:var(--accent)}
+.btn:disabled{opacity:.35; cursor:not-allowed}
+.btn.primary{background:var(--accent); color:var(--paper); border-color:var(--accent)}
+.btn.primary:hover:not(:disabled){background:#0d2c53; color:var(--paper)}
+.btn.ghost{border-color:var(--rule); color:var(--ink-2)}
+.btn.sm{font-size:.8rem; padding:5px 10px; min-height:34px}
+.btn-row{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+
+/* タブ（見出し下線式） */
+.seg{display:flex; gap:0; border-bottom:1px solid var(--rule)}
+.seg button{
+  appearance:none; border:0; background:transparent; font-family:inherit; font-size:.88rem;
+  font-weight:700; color:var(--ink-3); padding:9px 4px; margin-right:26px; cursor:pointer;
+  border-bottom:3px solid transparent; margin-bottom:-1px; min-height:40px;
+}
+.seg button:hover{color:var(--ink-2)}
+.seg button[aria-pressed="true"]{color:var(--ink); border-bottom-color:var(--accent)}
+
+label.fld{display:block; font-size:.78rem; font-weight:700; color:var(--ink-2); margin-bottom:5px; letter-spacing:.04em}
+input[type=text], textarea, input[type=number]{
+  width:100%; font-family:inherit; font-size:1rem; color:var(--ink);
+  border:1px solid var(--ink-3); border-radius:2px; padding:9px 11px;
+  background:var(--paper); min-height:42px;
+}
+input:focus, textarea:focus{outline:2px solid var(--accent); outline-offset:-1px; border-color:var(--accent)}
+.btn:focus-visible, .seg button:focus-visible, .node-card:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+textarea{resize:vertical; line-height:1.7}
+.mono{font-family:var(--mono)}
+
+table.tbl{width:100%; border-collapse:collapse; font-size:.89rem}
+table.tbl th, table.tbl td{border-bottom:1px solid var(--rule-2); padding:7px 10px; text-align:right}
+table.tbl th:first-child, table.tbl td:first-child{text-align:left}
+table.tbl thead th{border-bottom:1.5px solid var(--ink); font-size:.76rem; color:var(--ink-2); font-weight:700; white-space:nowrap}
+.tbl-scroll{overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%}
+
+.note{padding:10px 13px; font-size:.87rem; border-left:3px solid var(--ink-3); background:var(--paper-2)}
+.note.ok{background:var(--ok-bg); border-left-color:var(--ok); color:#123f22}
+.note.ng{background:var(--ng-bg); border-left-color:var(--ng); color:#6d1a15}
+.note.info{background:var(--paper-2); border-left-color:var(--accent); color:var(--ink-2)}
+.note.warn{background:var(--warn-bg); border-left-color:var(--warn); color:#5c3d00}
+.note[hidden]{display:none}
+
+.badge{
+  display:inline-block; font-size:.72rem; font-weight:700; padding:1px 7px;
+  border:1px solid var(--rule); color:var(--ink-2); background:var(--paper); letter-spacing:.04em;
+}
+
+/* 数値は罫線で仕切るだけ。カードにしない */
+.metrics{display:flex; flex-wrap:wrap; gap:0; border-top:1px solid var(--rule)}
+.metric{flex:1 1 130px; padding:11px 14px 11px 0; border-right:1px solid var(--rule-2)}
+.metric:last-child{border-right:0}
+.metric .k{font-size:.74rem; color:var(--ink-3); font-weight:700; letter-spacing:.05em}
+.metric .v{font-size:1.6rem; font-weight:700; line-height:1.3; font-family:var(--mono); letter-spacing:-.01em}
+.metric .s{font-size:.76rem; color:var(--ink-2)}
+
+.bit0{color:var(--zero); font-weight:700}
+.bit1{color:var(--one); font-weight:700}
+
+.app-footer{
+  max-width:960px; margin:0 auto; padding:18px 16px 44px; color:var(--ink-3);
+  font-size:.75rem; border-top:1px solid var(--rule);
+}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+@media(max-width:640px){
+  body{font-size:15px}
+  .app-header{padding:20px 16px 16px}
+  .app-header h1{font-size:1.16rem}
+  .wrap{padding:16px 12px 52px}
+  .step{padding:18px 15px}
+  .seg button{margin-right:18px; font-size:.84rem}
+  .metric{flex-basis:50%; border-right:0}
+}
+@media (prefers-reduced-motion:reduce){ *{animation:none!important; transition:none!important} }
+
+/* ---------- 自分のデータ・共有・印刷 ---------- */
+.toolbar{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:12px;
+  padding-top:12px; border-top:1px solid var(--rule-2)}
+.toolbar .hint{font-size:.78rem; color:var(--ink-3)}
+.paste-area{width:100%; min-height:110px; font-family:var(--mono); font-size:.86rem}
+.use-note{background:var(--paper-2); border-left:3px solid var(--accent); padding:14px 16px; font-size:.88rem}
+.use-note h3{font-size:.86rem; letter-spacing:.06em; margin-bottom:8px; color:var(--ink-2)}
+.use-note ol, .use-note ul{margin:0; padding-left:1.25em; line-height:1.95; color:var(--ink-2)}
+
+@media print{
+  body{background:#fff}
+  .app-header{border-bottom:2px solid #000}
+  .step{border:1px solid #bbb; break-inside:avoid; page-break-inside:avoid; margin-bottom:12px}
+  .btn, .seg, .toolbar, input[type=range]{display:none !important}
+  .note{border-left-width:2px}
+  a[href]:after{content:""}
+}
+
+/* ---------- 入力グリッド ---------- */
+.dg-scroll{overflow:auto; -webkit-overflow-scrolling:touch; border:1px solid var(--rule); background:var(--paper); max-height:420px}
+table.dg{border-collapse:collapse; font-family:var(--mono); font-size:.9rem; min-width:100%}
+table.dg th, table.dg td{border:1px solid var(--rule-2); padding:0}
+table.dg thead th{background:var(--paper-2); position:sticky; top:0; z-index:2}
+table.dg .dg-n{background:var(--paper-2); color:var(--ink-3); font-size:.76rem; font-weight:400;
+  text-align:center; min-width:34px; padding:0 4px; position:sticky; left:0; z-index:1}
+table.dg .dg-corner{background:var(--paper-2); min-width:34px; position:sticky; left:0; z-index:3}
+table.dg .dg-act{background:var(--paper-2); width:34px}
+.dg-h, .dg-c{width:100%; min-width:96px; border:0; background:transparent; font-family:inherit;
+  font-size:.9rem; padding:8px 9px; color:var(--ink); min-height:38px}
+.dg-h{font-weight:700; font-family:var(--font); font-size:.82rem; color:var(--ink-2)}
+.dg-c.num{text-align:right}
+.dg-c:focus, .dg-h:focus{outline:2px solid var(--accent); outline-offset:-2px; background:var(--accent-w)}
+.dg-del{border:0; background:transparent; color:var(--ink-3); cursor:pointer; width:32px; height:34px; font-size:1rem}
+.dg-del:hover{color:var(--ng)}
+.dg-tools{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:10px}
+.dg-hint{font-size:.76rem; color:var(--ink-3)}
+
+/* ---------- ファイル読み込み ---------- */
+.filebox{display:flex; flex-wrap:wrap; gap:10px; align-items:center; padding:12px;
+  border:1px dashed var(--rule); background:var(--paper-2)}
+.filebox input[type=file]{font-size:.85rem; font-family:inherit; max-width:100%}
+.filebox .sel{max-width:220px}
+.filelabel{display:inline-flex; align-items:center; gap:6px; font-size:.85rem; font-weight:700;
+  border:1px solid var(--ink-3); background:var(--paper); padding:8px 14px; border-radius:2px; cursor:pointer; min-height:40px}
+.filelabel:hover{border-color:var(--accent); color:var(--accent); background:var(--accent-w)}
+.filelabel input{display:none}
+
+/* ---------- 用語解説 ---------- */
+.term{position:relative; border-bottom:1.5px dotted var(--accent); cursor:help; color:var(--accent); font-weight:700}
+.term .term-pop{display:none; position:absolute; left:0; top:1.7em; z-index:50; width:min(300px,78vw);
+  background:var(--paper); border:1px solid var(--ink-3); box-shadow:0 6px 20px rgba(0,0,0,.14);
+  padding:10px 12px; font-size:.82rem; font-weight:400; color:var(--ink-2); line-height:1.75;
+  border-left:3px solid var(--accent); cursor:auto; text-align:left}
+.term .term-pop b{display:block; color:var(--ink); font-size:.86rem; margin-bottom:3px}
+.term.open .term-pop{display:block}
+dl.gloss{margin:0; font-size:.88rem}
+dl.gloss dt{font-weight:700; color:var(--ink); margin-top:10px}
+dl.gloss dt:first-child{margin-top:0}
+dl.gloss dd{margin:2px 0 0; color:var(--ink-2); line-height:1.85; padding-left:1em; border-left:2px solid var(--rule-2)}
+@media print{ .term{border-bottom:0; color:inherit} .term .term-pop{display:none !important} }
+
+/* ---------- スマホ・タブレット ---------- */
+@media (max-width:1024px){
+  /* iOS で入力時に画面が勝手に拡大するのを防ぐ（16px 未満だとズームする） */
+  input[type=text], input[type=number], textarea, select, .dg-c, .dg-h{ font-size:16px }
+  .dg-c, .dg-h{ min-width:110px }
+}
+@media (max-width:820px){
+  .grid.c2{grid-template-columns:1fr}
+  .dg-scroll{max-height:340px}
+  .filebox{flex-direction:column; align-items:stretch}
+  .filebox .sel{max-width:100%}
+  .term .term-pop{left:auto; right:0; width:min(280px,86vw)}
+}
+@media (max-width:480px){
+  .step > h2{font-size:1rem; flex-wrap:wrap}
+  .metrics{gap:0}
+  .metric{flex-basis:50%; padding-right:10px}
+  .metric .v{font-size:1.3rem}
+  .btn{padding:8px 12px}
+  .dg-tools{gap:6px}
+  .dg-hint{width:100%}
+}
+/* タッチ操作でのスクロールを滑らかに */
+.tbl-scroll, .dg-scroll, .tree-box{ -webkit-overflow-scrolling:touch; overscroll-behavior-x:contain }

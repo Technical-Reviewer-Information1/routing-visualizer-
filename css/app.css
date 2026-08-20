@@ -1,0 +1,38 @@
+.qhead{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px}
+.card-q{border:1px solid var(--rule); background:var(--paper); padding:18px; margin-bottom:14px}
+.q-scene{font-size:1rem; font-weight:700; line-height:1.9}
+.choice4{display:grid; gap:8px; grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+.choice4 .btn{text-align:left; line-height:1.65; padding:11px 13px}
+.choice4 .btn.correct{background:var(--ok-bg); border-color:var(--ok); color:var(--ok)}
+.choice4 .btn.wrong{background:var(--ng-bg); border-color:var(--ng); color:var(--ng)}
+.choice4.locked{pointer-events:none}
+.sel{width:100%; font-family:inherit; font-size:.95rem; padding:9px 11px; min-height:42px;
+  border:1px solid var(--ink-3); border-radius:2px; background:var(--paper); color:var(--ink)}
+input[type=range]{width:100%; accent-color:var(--accent); height:34px}
+.why{font-size:.85rem; color:var(--ink-2); line-height:1.85}
+.eqbox{font-family:var(--mono); font-size:1.02rem; font-weight:700; text-align:center; padding:14px;
+  border:1px solid var(--rule); background:var(--paper-2); line-height:1.8}
+.blankin{border:1.5px solid var(--accent); background:#fff; padding:6px 8px; text-align:center;
+  font-family:var(--mono); min-height:38px; font-size:.95rem; max-width:120px}
+.blankin.ok{border-color:var(--ok); background:var(--ok-bg)}
+.blankin.ng{border-color:var(--ng); background:var(--ng-bg)}
+table.tbl td .blankin{width:100%; max-width:none}
+#netBox{border:1px solid var(--rule); background:var(--paper); overflow-x:auto}
+#netBox svg{display:block; margin:0 auto}
+svg .cloud{fill:#f0eeea; stroke:#858a92; stroke-width:1.6}
+svg .cloud.hot{fill:#fbf5e8; stroke:#8a5a00; stroke-width:2.6}
+svg .rt{fill:#fff; stroke:#123a6b; stroke-width:2}
+svg .rt.hot{fill:#e9eef6; stroke:#8a5a00; stroke-width:3}
+svg .rt.me{fill:#123a6b}
+svg .lk{stroke:#858a92; stroke-width:2}
+svg .lk.hot{stroke:#8a5a00; stroke-width:4}
+svg .lab{font-size:11px; text-anchor:middle; fill:#15181c; font-weight:700; pointer-events:none}
+svg .lab.w{fill:#fff}
+svg .iflab{font-size:9.5px; fill:#4a4f57; font-family:monospace}
+#rtTable td{font-family:var(--mono); text-align:center}
+#rtTable td:first-child, #rtTable td:nth-child(2){font-family:var(--font)}
+#rtTable select{width:100%; min-height:38px; font-family:var(--mono); border:1.5px solid var(--accent);
+  background:#fff; padding:5px}
+#rtTable select.ok{border-color:var(--ok); background:var(--ok-bg)}
+#rtTable select.ng{border-color:var(--ng); background:var(--ng-bg)}
+#rtTable tr.fixed td{background:var(--paper-2)}

@@ -1,0 +1,78 @@
+  <section class="step" id="step1">
+    <h2><span class="no">STEP 1</span>ネットワークの構成を読む</h2>
+    <p class="desc">まず「どのルータがどのネットワークに接しているか」を確かめます。<span class="term" data-t="ルータ">ルータ</span>は<strong>2つ以上のネットワークをまたいで</strong>います。</p>
+
+    <div class="panel">
+      <div id="netBox"></div>
+      <div class="note info" style="margin-top:12px">
+        <strong>ルータ2</strong>（濃い色）の立場で考えます。ルータ2は <span class="mono">E0</span> でネットワーク1に、
+        <span class="mono">E1</span> でネットワーク2につながっています。この2つが「直接つながっている」ネットワークです。
+      </div>
+      <div class="tbl-scroll" style="margin-top:12px"><table class="tbl" id="adjTable"></table></div>
+    </div>
+  </section>
+
+  <section class="step" id="step2">
+    <h2><span class="no">STEP 2</span>ルーティングテーブルを完成させる</h2>
+    <p class="desc">ルータ2の表の空欄を埋めてください。<strong>インタフェース</strong>は出口（E0かE1）、<strong>ゲートウェイ</strong>は次に渡す相手、<span class="term" data-t="メトリック">メトリック</span>は経由するルータの数です。</p>
+
+    <div class="panel">
+      <div class="tbl-scroll"><table class="tbl" id="rtTable"></table></div>
+      <div class="btn-row" style="margin-top:12px">
+        <button class="btn primary" id="checkRt">答え合わせ</button>
+        <button class="btn" id="hintRt">考え方を見る</button>
+        <button class="btn ghost" id="resetRt">消してやり直す</button>
+      </div>
+      <div class="note" id="rtFb" hidden style="margin-top:12px"></div>
+    </div>
+  </section>
+
+  <section class="step" id="step3">
+    <h2><span class="no">STEP 3</span>パケットの旅を追いかける</h2>
+    <p class="desc">宛先をえらぶと、ルータ2から出たパケットが<strong>どの道を通るか</strong>を図と表で示します。</p>
+    <div class="panel">
+      <div class="btn-row" style="margin-bottom:12px">
+        <span class="badge">宛先</span>
+        <button class="btn sm" data-dest="1">ネットワーク1</button>
+        <button class="btn sm" data-dest="2">ネットワーク2</button>
+        <button class="btn sm" data-dest="3">ネットワーク3</button>
+        <button class="btn sm" data-dest="4">ネットワーク4</button>
+        <button class="btn sm" data-dest="5">ネットワーク5</button>
+      </div>
+      <div class="note" id="routeNote"></div>
+      <div class="tbl-scroll" style="margin-top:12px"><table class="tbl" id="hopTable"></table></div>
+    </div>
+  </section>
+
+  <section class="step" id="step4">
+    <h2><span class="no">STEP 4</span>確認クイズ</h2>
+    <div class="panel">
+      <div class="qhead">
+        <span class="badge" id="qProgress">1 / 1</span>
+        <span class="badge">正解 <span class="score" id="qScore">0</span></span>
+      </div>
+      <div class="card-q"><div class="q-scene" id="qText"></div></div>
+      <div class="choice4" id="qChoices"></div>
+      <div class="note" id="qFb" hidden style="margin-top:12px"></div>
+      <div class="btn-row" style="margin-top:12px">
+        <button class="btn primary" id="qNext" disabled>次の問題</button>
+        <button class="btn ghost" id="qReset">最初から</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="step" id="glossary">
+    <h2><span class="no">用語</span>この節で出てくることば</h2>
+    <div id="glossBox"></div>
+  </section>
+
+  <section class="step">
+    <h2><span class="no">まとめ</span>ルーティングのポイント</h2>
+    <ul style="margin:0;padding-left:1.2em;color:var(--ink-2);font-size:.92rem;line-height:2.05">
+      <li>ルータは宛先ごとに<strong>「どの出口から、誰に渡すか」</strong>を表にもっている。</li>
+      <li>自分が直接つながっているネットワークは<strong>ゲートウェイが「直接」</strong>。</li>
+      <li>直接つながっていないネットワークへは、<strong>そのネットワークに接しているルータ</strong>に渡す。</li>
+      <li>メトリックは経路のコスト。ここでは<strong>経由するルータの数</strong>。</li>
+      <li>経路が複数あるときは<strong>メトリックが小さいほう</strong>が選ばれる。</li>
+    </ul>
+  </section>
