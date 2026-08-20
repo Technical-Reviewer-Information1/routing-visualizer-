@@ -41,6 +41,16 @@
       </div>
       <div class="note" id="routeNote"></div>
       <div class="tbl-scroll" style="margin-top:12px"><table class="tbl" id="hopTable"></table></div>
+      <hr class="sep">
+      <p class="qhead">回線が切れたらどうなるか</p>
+      <p class="desc" style="margin-top:0">ルータをクリックすると<strong>そのルータを故障させます</strong>。経路がどう変わるか（変わらないか）を見てみましょう。</p>
+      <div class="btn-row" style="flex-wrap:wrap">
+        <button class="btn sm" data-down="ルータ1">ルータ1を止める</button>
+        <button class="btn sm" data-down="ルータ3">ルータ3を止める</button>
+        <button class="btn sm" data-down="ルータ4">ルータ4を止める</button>
+        <button class="btn sm ghost" id="upAll">全部復旧させる</button>
+      </div>
+      <div class="note" id="downNote" style="margin-top:12px"></div>
     </div>
   </section>
 

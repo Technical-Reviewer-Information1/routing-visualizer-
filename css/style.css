@@ -242,3 +242,28 @@ dl.gloss dd{margin:2px 0 0; color:var(--ink-2); line-height:1.85; padding-left:1
 }
 /* タッチ操作でのスクロールを滑らかに */
 .tbl-scroll, .dg-scroll, .tree-box{ -webkit-overflow-scrolling:touch; overscroll-behavior-x:contain }
+
+/* 幅指定つきの入力欄がスマートフォンではみ出さないようにする */
+input[type=text], input[type=number], input[type=search], textarea, select{ max-width:100% }
+.btn-row > label{ min-width:0; max-width:100% }
+.btn-row > label input, .btn-row > label select{ max-width:100% }
+
+/* 共通：○×判定・並べかえ（quiz.js 用） */
+.abcde{border:1px solid var(--rule); border-radius:3px; overflow:hidden}
+.abcde > div{border-top:1px solid var(--rule); padding:10px 12px}
+.abcde > div:first-child{border-top:0}
+.abcde .st{display:flex; gap:10px; align-items:flex-start; flex-wrap:wrap}
+.abcde .st .k{font-weight:700; font-family:var(--mono); min-width:1.4em}
+.abcde .st .t{flex:1; min-width:12em}
+.abcde .jb{display:flex; gap:6px}
+.abcde .jb .btn{min-width:3.4em; padding:6px 10px; text-align:center}
+.prep{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-top:10px}
+.prep .slot{border:1px dashed var(--ink-3); border-radius:3px; padding:10px; min-height:92px; background:var(--paper)}
+.prep .slot.filled{border-style:solid}
+.prep .slot .tag{font:700 .74rem/1.4 var(--mono); color:var(--accent); display:block; margin-bottom:6px}
+.prep .slot .txt{font-size:.86rem; line-height:1.7}
+.cards{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
+.cards .c{border:1px solid var(--ink-3); border-radius:3px; padding:9px 12px; background:var(--paper);
+  cursor:pointer; font-size:.88rem; max-width:100%; text-align:left; font-family:inherit; color:var(--ink)}
+.cards .c:hover{background:var(--warn-bg)}
+.cards .c.used{opacity:.35; pointer-events:none}

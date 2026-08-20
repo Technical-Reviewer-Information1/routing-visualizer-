@@ -13,6 +13,7 @@
     'ルータ4': { nets: [1, 3], x: 220, y: 143 }
   };
   const ME = 'ルータ2';
+  const DOWN = {};   /* 故障中のルータ */
 
   /** ルータ2から見た宛先ネットワークへの経路 */
   function routeTo(dest) {
@@ -21,13 +22,37 @@
     // 直接つながっているネットワークのどれかに、宛先へ接するルータがいるか
     for (const net of me.nets) {
       for (const rn in ROUTERS) {
-        if (rn === ME) continue;
+        if (rn === ME || DOWN[rn]) continue;
         const r = ROUTERS[rn];
         if (r.nets.indexOf(net) >= 0 && r.nets.indexOf(dest) >= 0)
           return { iface: me.ifs[net], gw: rn, metric: 2, hops: [ME, 'ネットワーク' + net, rn, 'ネットワーク' + dest] };
       }
     }
     return null;
+  }
+
+  function reportDown() {
+    if (!$('downNote')) return;
+    const downs = Object.keys(DOWN).filter(function (k) { return DOWN[k]; });
+    document.querySelectorAll('[data-down]').forEach(function (b) {
+      const on = !!DOWN[b.dataset.down];
+      b.textContent = (on ? '● ' : '') + b.dataset.down + (on ? 'は故障中（押すと復旧）' : 'を止める');
+      b.classList.toggle('primary', on);
+    });
+    const lost = [1, 2, 3, 4, 5].filter(function (d) { return !routeTo(d); });
+    const n = $('downNote');
+    if (!downs.length) {
+      n.className = 'note info';
+      n.innerHTML = 'いまはすべて正常です。ボタンでルータを止めてみましょう。';
+      return;
+    }
+    n.className = 'note ' + (lost.length ? 'ng' : 'ok');
+    n.innerHTML = '<strong>故障中：' + downs.join('・') + '</strong><br>' +
+      (lost.length
+        ? 'ルータ2から <strong>ネットワーク' + lost.join('・') + '</strong> へ届かなくなりました。' +
+          'ルーティングテーブルからその行が消えています。<br>' +
+          '<span class="small">経路が1本しかないところは、そのルータが止まると通信できません。これを避けるために、実際のネットワークでは<strong>経路を二重にする（冗長化）</strong>ことがあります。</span>'
+        : 'それでもすべてのネットワークに届きます。<strong>別の道が残っている</strong>ためです。');
   }
 
   /* ---------- 図 ---------- */
@@ -44,7 +69,9 @@
       r.nets.forEach(n => {
         const nn = NETS[n];
         const hot = rt && hotRouters.indexOf(rn) >= 0 && hotNets.indexOf(n) >= 0;
-        svg.appendChild(el('line', { x1: r.x, y1: r.y, x2: nn.x, y2: nn.y, class: 'lk' + (hot ? ' hot' : '') }));
+        svg.appendChild(el('line', { x1: r.x, y1: r.y, x2: nn.x, y2: nn.y,
+          class: 'lk' + (hot ? ' hot' : ''), opacity: DOWN[rn] ? .25 : 1,
+          'stroke-dasharray': DOWN[rn] ? '4 4' : null }));
       });
     });
     // ネットワーク
@@ -57,6 +84,8 @@
     // ルータ
     Object.keys(ROUTERS).forEach(rn => {
       const r = ROUTERS[rn];
+      if (DOWN[rn]) svg.appendChild(el('rect', { x: r.x - 38, y: r.y - 20, width: 76, height: 40, rx: 4,
+        fill: 'none', stroke: '#c0392b', 'stroke-width': 2.5, 'stroke-dasharray': '5 3' }));
       svg.appendChild(el('rect', { x: r.x - 34, y: r.y - 16, width: 68, height: 32, rx: 3,
         class: 'rt' + (r.me ? ' me' : '') + (hotRouters.indexOf(rn) >= 0 && !r.me ? ' hot' : '') }));
       svg.appendChild(el('text', { x: r.x, y: r.y + 4, class: 'lab' + (r.me ? ' w' : '') }, rn));
@@ -83,7 +112,9 @@
       const r = routeTo(n);
       const fixed = n <= 3;
       h += '<tr class="' + (fixed ? 'fixed' : '') + '"><td>' + n + '</td><td>ネットワーク' + n + '</td>';
-      if (fixed) h += '<td>' + r.iface + '</td><td>' + r.gw + '</td><td>' + r.metric + '</td>';
+      if (fixed) h += r
+        ? '<td>' + r.iface + '</td><td>' + r.gw + '</td><td>' + r.metric + '</td>'
+        : '<td colspan="3" style="color:#c0392b">経路なし（この行は消えます）</td>';
       else {
         h += '<td>' + sel('if' + n, IFACES) + '</td><td>' + sel('gw' + n, GWS) + '</td><td>' + sel('mt' + n, METS) + '</td>';
       }
@@ -132,6 +163,15 @@
     const r = routeTo(dest);
     drawNet();
     const n = $('routeNote');
+    if (!r) {
+      n.className = 'note ng';
+      n.innerHTML = '<strong>ネットワーク' + dest + '</strong> へは<strong>届きません</strong>。' +
+        '経路の途中にあるルータが故障しているため、ルーティングテーブルにこの宛先の行がありません。' +
+        '<br><span class="small">行き先の分からないパケットは、そこで捨てられます。</span>';
+      $('hopTable').innerHTML = '<thead><tr><th>順番</th><th>通る場所</th></tr></thead><tbody>' +
+        '<tr><td>1</td><td>ルータ2（ここで行き先が分からず、パケットは破棄）</td></tr></tbody>';
+      return;
+    }
     n.className = 'note ok';
     n.innerHTML = '<strong>ネットワーク' + dest + '</strong> あてのパケットは、' +
       (r.gw === '直接'
@@ -213,6 +253,18 @@
     $('hintRt').addEventListener('click', hintRt);
     $('resetRt').addEventListener('click', () => { drawRt(); $('rtFb').hidden = true; });
     document.querySelectorAll('[data-dest]').forEach(b => b.addEventListener('click', () => showRoute(+b.dataset.dest)));
+    document.querySelectorAll('[data-down]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        const rn = b.dataset.down;
+        DOWN[rn] = !DOWN[rn];
+        drawNet(); drawRt(); showRoute(hotDest || 4); reportDown();
+      });
+    });
+    if ($('upAll')) $('upAll').addEventListener('click', function () {
+      Object.keys(DOWN).forEach(function (k) { delete DOWN[k]; });
+      drawNet(); drawRt(); showRoute(hotDest || 4); reportDown();
+    });
+    reportDown();
     $('qNext').addEventListener('click', () => { qi++; renderQ(); });
     $('qReset').addEventListener('click', startQuiz);
     window.Terms.glossary($('glossBox'), ['ルータ', 'ルーティングテーブル', 'メトリック', 'パケット', 'IPアドレス', 'スイッチングハブ', 'DHCP', 'DNS']);
