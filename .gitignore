@@ -1,0 +1,7 @@
+# ツールの作業ファイル（リポジトリには含めない）
+.omc/
+.serena/
+.claude/
+__pycache__/
+*.pyc
+.DS_Store
