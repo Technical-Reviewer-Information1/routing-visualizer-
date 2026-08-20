@@ -248,6 +248,12 @@
     $('qScore').textContent = qScore; $('qNext').disabled = false;
   }
 
+  /* 本文の問題 */
+  function drawBook() {
+    if (!document.getElementById('bookBox')) return;
+    window.Quiz.choice('bookBox', 'bookNote', [{"k": "ア", "q": "ネットワーク4あての「インタフェース」は。", "ch": ["E0", "E1", "直接", "ルータ1", "ルータ3", "ルータ4", "1", "2", "3", "4"], "a": 0, "why": "ネットワーク4に接しているのはルータ1。ルータ1はネットワーク1にもいるので、ネットワーク1につながる E0 から出します。"}, {"k": "イ", "q": "ネットワーク4あての「ゲートウェイ」は。", "ch": ["E0", "E1", "直接", "ルータ1", "ルータ3", "ルータ4", "1", "2", "3", "4"], "a": 3, "why": "次に渡す相手はルータ1です。"}, {"k": "ウ", "q": "ネットワーク4あての「メトリック」は。", "ch": ["E0", "E1", "直接", "ルータ1", "ルータ3", "ルータ4", "1", "2", "3", "4"], "a": 7, "why": "ルータ1を1台経由するので2です。直接つながっているときが1、1台経由で2と数えます。"}, {"k": "エ", "q": "ネットワーク5あての「インタフェース」は。", "ch": ["E0", "E1", "直接", "ルータ1", "ルータ3", "ルータ4", "1", "2", "3", "4"], "a": 1, "why": "ネットワーク5に接しているのはルータ3。ルータ3はネットワーク2にもいるので、ネットワーク2につながる E1 から出します。"}, {"k": "オ", "q": "ネットワーク5あての「ゲートウェイ」は。", "ch": ["E0", "E1", "直接", "ルータ1", "ルータ3", "ルータ4", "1", "2", "3", "4"], "a": 4, "why": "次に渡す相手はルータ3です。"}, {"k": "カ", "q": "ネットワーク5あての「メトリック」は。", "ch": ["E0", "E1", "直接", "ルータ1", "ルータ3", "ルータ4", "1", "2", "3", "4"], "a": 7, "why": "ルータ3を1台経由するので2です。"}], "本文の答えは【ア】⓪　【イ】③　【ウ】⑦　【エ】①　【オ】④　【カ】⑦ です。STEP 2 の答え合わせと同じ内容です。");
+  }
+
   function init() {
     $('checkRt').addEventListener('click', checkRt);
     $('hintRt').addEventListener('click', hintRt);
@@ -269,6 +275,7 @@
     $('qReset').addEventListener('click', startQuiz);
     window.Terms.glossary($('glossBox'), ['ルータ', 'ルーティングテーブル', 'メトリック', 'パケット', 'IPアドレス', 'スイッチングハブ', 'DHCP', 'DNS']);
     drawNet(); drawRt(); showRoute(4); startQuiz();
+    drawBook();
     window.Terms.attach();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
