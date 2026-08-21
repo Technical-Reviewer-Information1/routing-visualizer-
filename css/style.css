@@ -118,7 +118,7 @@ table.tbl th:first-child, table.tbl td:first-child{text-align:left}
 table.tbl thead th{border-bottom:1.5px solid var(--ink); font-size:.76rem; color:var(--ink-2); font-weight:700; white-space:nowrap}
 .tbl-scroll{overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%}
 
-.note{padding:10px 13px; font-size:.87rem; border-left:3px solid var(--ink-3); background:var(--paper-2)}
+.note{padding:10px 13px; font-size:.87rem; border-left:3px solid var(--ink-3); background:var(--paper-2); overflow-wrap:break-word; word-break:break-word}
 .note.ok{background:var(--ok-bg); border-left-color:var(--ok); color:#123f22}
 .note.ng{background:var(--ng-bg); border-left-color:var(--ng); color:#6d1a15}
 .note.info{background:var(--paper-2); border-left-color:var(--accent); color:var(--ink-2)}
