@@ -11,7 +11,7 @@
     box.innerHTML = items.map(function (b, i) {
       const long = b.ch.some(c => c.replace(/<[^>]+>/g, '').length > 14);
       return '<div' + (i ? ' style="margin-top:18px;padding-top:16px;border-top:1px solid var(--line)"' : '') + '>' +
-        '<p class="qhead" style="margin:0 0 8px">' + (b.k ? '【' + b.k + '】　' : '') + b.q + '</p>' +
+        '<p class="pq">' + (b.k ? '【' + b.k + '】　' : '') + b.q + '</p>' +
         '<div class="choice4' + (long ? ' v' : '') + '" data-i="' + i + '">' + b.ch.map(function (c, j) {
           return '<button class="btn" data-i="' + i + '" data-c="' + j + '" style="text-align:' + (long ? 'left' : 'center') + '">' +
             '⓪①②③④⑤⑥⑦⑧⑨ⓐⓑⓒ'[j] + '　' + c + '</button>';
