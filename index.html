@@ -37,7 +37,7 @@
 
   <section class="step" id="step2">
     <h2><span class="no">STEP 2</span>ルーティングテーブルを完成させる</h2>
-    <p class="desc">ルータ2の表の空欄を埋めてください。<strong>インタフェース</strong>は出口（E0かE1）、<strong>ゲートウェイ</strong>は次に渡す相手、<span class="term" data-t="メトリック">メトリック</span>は経由するルータの数です。</p>
+    <p class="desc">ルータ2の表の空欄を埋めてください。<strong>インタフェース</strong>は出口（E0かE1）、<strong>ゲートウェイ</strong>は次に渡す相手、<span class="term" data-t="メトリック">メトリック</span>は<strong>パケットが通るルータの台数</strong>です（ルータ2自身を1台目と数えます。直接つながっているネットワークは 1）。</p>
 
     <div class="panel">
       <div class="tbl-scroll"><table class="tbl" id="rtTable"></table></div>
@@ -112,7 +112,8 @@
       <li>ルータは宛先ごとに<strong>「どの出口から、誰に渡すか」</strong>を表にもっている。</li>
       <li>自分が直接つながっているネットワークは<strong>ゲートウェイが「直接」</strong>。</li>
       <li>直接つながっていないネットワークへは、<strong>そのネットワークに接しているルータ</strong>に渡す。</li>
-      <li>メトリックは経路のコスト。ここでは<strong>経由するルータの数</strong>。</li>
+      <li>メトリックは経路のコスト。この問題では<strong>パケットが通るルータの台数</strong>（自分を1台目と数える）。</li>
+      <li><strong>ゲートウェイは「すぐ次に渡すルータ」</strong>。宛先のネットワークに接しているルータとはかぎらない。ネットワーク4に接しているのはルータ1だが、ルータ2から渡す相手はルータ4。</li>
       <li>経路が複数あるときは<strong>メトリックが小さいほう</strong>が選ばれる。</li>
     </ul>
   </section>
@@ -144,6 +145,6 @@
 <script src="js/tools.js?v=c07db610"></script>
 <script src="js/terms.js?v=92038844"></script>
 <script src="js/quiz.js?v=13402362"></script>
-<script src="js/app.js?v=6830445a"></script>
+<script src="js/app.js?v=4be91154"></script>
 </body>
 </html>

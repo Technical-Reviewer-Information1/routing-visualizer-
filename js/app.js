@@ -5,28 +5,46 @@
   function el(n, a, t) { const e = document.createElementNS(NS, n); for (const k in a) if (a[k] != null) e.setAttribute(k, a[k]); if (t != null) e.textContent = t; return e; }
 
   /* ネットワーク構成：ルータがどのネットワークに接しているか */
-  const NETS = { 1: { x: 330, y: 90 }, 2: { x: 330, y: 300 }, 3: { x: 110, y: 195 }, 4: { x: 550, y: 90 }, 5: { x: 550, y: 300 } };
+  const NETS = { 1: { x: 300, y: 80 }, 2: { x: 560, y: 80 }, 3: { x: 110, y: 250 }, 4: { x: 400, y: 336 }, 5: { x: 600, y: 336 } };
   const ROUTERS = {
-    'ルータ1': { nets: [1, 4], x: 440, y: 90 },
-    'ルータ2': { nets: [1, 2], x: 330, y: 195, me: true, ifs: { 1: 'E0', 2: 'E1' } },
-    'ルータ3': { nets: [2, 5], x: 440, y: 300 },
-    'ルータ4': { nets: [1, 3], x: 220, y: 143 }
+    'ルータ1': { nets: [3, 4], x: 250, y: 330, ifs: { 3: 'E0', 4: 'E1' } },
+    'ルータ2': { nets: [1, 2], x: 430, y: 80, me: true, ifs: { 1: 'E0', 2: 'E1' } },
+    'ルータ3': { nets: [2, 5], x: 600, y: 200, ifs: { 2: 'E0', 5: 'E1' } },
+    'ルータ4': { nets: [1, 3], x: 150, y: 130, ifs: { 1: 'E0', 3: 'E1' } }
   };
   const ME = 'ルータ2';
   const DOWN = {};   /* 故障中のルータ */
 
-  /** ルータ2から見た宛先ネットワークへの経路 */
+  /** ルータ2から見た宛先ネットワークへの経路（幅優先探索でいちばん近い道をさがす）
+      メトリックは本文の表に合わせて「パケットが通るルータの台数（自分を1台目と数える）」 */
   function routeTo(dest) {
     const me = ROUTERS[ME];
-    if (me.nets.indexOf(dest) >= 0) return { iface: me.ifs[dest], gw: '直接', metric: 1, hops: [ME, 'ネットワーク' + dest] };
-    // 直接つながっているネットワークのどれかに、宛先へ接するルータがいるか
-    for (const net of me.nets) {
-      for (const rn in ROUTERS) {
-        if (rn === ME || DOWN[rn]) continue;
-        const r = ROUTERS[rn];
-        if (r.nets.indexOf(net) >= 0 && r.nets.indexOf(dest) >= 0)
-          return { iface: me.ifs[net], gw: rn, metric: 2, hops: [ME, 'ネットワーク' + net, rn, 'ネットワーク' + dest] };
+    if (me.nets.indexOf(dest) >= 0)
+      return { iface: me.ifs[dest], gw: '直接', metric: 1, hops: [ME, 'ネットワーク' + dest] };
+    const seen = {}; seen[ME] = true;
+    let frontier = [{ r: ME, path: [ME], gw: null, firstNet: null }];
+    while (frontier.length) {
+      const next = [];
+      for (const st of frontier) {
+        const cur = ROUTERS[st.r];
+        for (const net of cur.nets) {
+          for (const rn in ROUTERS) {
+            if (rn === st.r || DOWN[rn] || seen[rn]) continue;
+            const r = ROUTERS[rn];
+            if (r.nets.indexOf(net) < 0) continue;
+            const path = st.path.concat(['ネットワーク' + net, rn]);
+            const gw = st.gw || rn;
+            const firstNet = st.firstNet || net;
+            if (r.nets.indexOf(dest) >= 0)
+              return { iface: me.ifs[firstNet], gw: gw,
+                       metric: path.filter(function (x) { return x.indexOf('ルータ') === 0; }).length,
+                       hops: path.concat(['ネットワーク' + dest]) };
+            seen[rn] = true;
+            next.push({ r: rn, path: path, gw: gw, firstNet: firstNet });
+          }
+        }
       }
+      frontier = next;
     }
     return null;
   }
@@ -91,8 +109,11 @@
       svg.appendChild(el('text', { x: r.x, y: r.y + 4, class: 'lab' + (r.me ? ' w' : '') }, rn));
       if (r.ifs) Object.keys(r.ifs).forEach(n => {
         const nn = NETS[n];
-        const mx = r.x + (nn.x - r.x) * 0.32, my = r.y + (nn.y - r.y) * 0.32;
-        svg.appendChild(el('text', { x: mx + 12, y: my, class: 'iflab' }, r.ifs[n]));
+        const mx = r.x + (nn.x - r.x) * 0.42, my = r.y + (nn.y - r.y) * 0.42;
+        const dx = Math.abs(nn.x - r.x) > Math.abs(nn.y - r.y) ? 0 : 13;
+        const dy = dx ? 4 : -7;
+        svg.appendChild(el('text', { x: mx + dx, y: my + dy, class: 'iflab',
+          'text-anchor': dx ? 'start' : 'middle' }, r.ifs[n]));
       });
     });
     const box = $('netBox'); box.innerHTML = ''; box.appendChild(svg);
@@ -140,20 +161,23 @@
     const fb = $('rtFb'); fb.hidden = false;
     fb.className = 'note ' + (ok === tot ? 'ok' : 'ng');
     fb.innerHTML = ok === tot
-      ? '<strong>すべて正解です。</strong>ネットワーク4は E0 → ルータ1 でメトリック2、ネットワーク5は E1 → ルータ3 でメトリック2。'
+      ? '<strong>すべて正解です。</strong>ネットワーク4は E0 → ルータ4 でメトリック3、ネットワーク5は E1 → ルータ3 でメトリック2。'
       : ok + ' / ' + tot + ' 正解。「考え方を見る」を押すと、順を追って確かめられます。';
   }
   function hintRt() {
     const fb = $('rtFb'); fb.hidden = false; fb.className = 'note info';
     fb.innerHTML =
       '<strong>ネットワーク4へ行くには？</strong><br>' +
-      'ネットワーク4に接しているのは <strong>ルータ1</strong>。ルータ1はネットワーク1にもいる。<br>' +
-      'ルータ2はネットワーク1に <span class="mono">E0</span> でつながっている。<br>' +
-      '→ インタフェース <strong>E0</strong>、ゲートウェイ <strong>ルータ1</strong>、経由するルータは自分とルータ1で <strong>2</strong>。<br><br>' +
+      'ネットワーク4に接しているのは <strong>ルータ1</strong>。でもルータ1はネットワーク3にいて、' +
+      '<strong>ルータ2のとなりではありません</strong>。<br>' +
+      'ルータ2 →〈ネットワーク1〉→ ルータ4 →〈ネットワーク3〉→ ルータ1 →〈ネットワーク4〉<br>' +
+      '→ 出口はネットワーク1側の <strong>E0</strong>、<strong>次に渡す相手（ゲートウェイ）はルータ4</strong>。' +
+      'ゲートウェイは<strong>「最終的に届けてくれるルータ」ではなく「すぐ次に渡すルータ」</strong>です。<br>' +
+      '→ 通るルータは ルータ2・ルータ4・ルータ1 の <strong>3</strong> 台。<br><br>' +
       '<strong>ネットワーク5へ行くには？</strong><br>' +
-      'ネットワーク5に接しているのは <strong>ルータ3</strong>。ルータ3はネットワーク2にもいる。<br>' +
+      'ネットワーク5に接しているのは <strong>ルータ3</strong>。ルータ3はネットワーク2にもいて、こちらは<strong>となり</strong>です。<br>' +
       'ルータ2はネットワーク2に <span class="mono">E1</span> でつながっている。<br>' +
-      '→ <strong>E1・ルータ3・2</strong>。';
+      '→ <strong>E1・ルータ3・2</strong>（ルータ2とルータ3の2台）。';
   }
 
   /* ---------- STEP3 経路追跡 ---------- */
@@ -190,8 +214,9 @@
       a: 'そのネットワークに自分が直接つながっているとき',
       why: '自分の口（インタフェース）がそのネットワークに接していれば、他のルータに渡す必要がありません。' },
     { t: 'ルータ2からネットワーク4へ送るときのゲートウェイはどれか。',
-      choices: ['ルータ1', 'ルータ3', 'ルータ4', '直接'], a: 'ルータ1',
-      why: 'ネットワーク4に接しているのはルータ1です。ルータ1はネットワーク1にもいるので、E0から出してルータ1に渡します。' },
+      choices: ['ルータ1', 'ルータ3', 'ルータ4', '直接'], a: 'ルータ4',
+      why: 'ネットワーク4に接しているのはルータ1ですが、<strong>ルータ1はルータ2のとなりにいません</strong>。' +
+           'ルータ2のとなりはルータ4なので、まずルータ4に渡します。ゲートウェイは「すぐ次に渡す相手」です。' },
     { t: 'ルータ2からネットワーク5へ送るときのインタフェースはどれか。',
       choices: ['E1', 'E0', '直接', 'ルータ3'], a: 'E1',
       why: 'ネットワーク5に接するルータ3は、ネットワーク2にもいます。ルータ2はネットワーク2にE1でつながっています。' },
@@ -251,7 +276,7 @@
   /* 本文の問題 */
   function drawBook() {
     if (!document.getElementById('bookBox')) return;
-    window.Quiz.choice('bookBox', 'bookNote', [{"k": "ア", "q": "ネットワーク4あての「インタフェース」は。", "ch": ["E0", "E1", "直接", "ルータ1", "ルータ3", "ルータ4", "1", "2", "3", "4"], "a": 0, "why": "ネットワーク4に接しているのはルータ1。ルータ1はネットワーク1にもいるので、ネットワーク1につながる E0 から出します。"}, {"k": "イ", "q": "ネットワーク4あての「ゲートウェイ」は。", "ch": ["E0", "E1", "直接", "ルータ1", "ルータ3", "ルータ4", "1", "2", "3", "4"], "a": 3, "why": "次に渡す相手はルータ1です。"}, {"k": "ウ", "q": "ネットワーク4あての「メトリック」は。", "ch": ["E0", "E1", "直接", "ルータ1", "ルータ3", "ルータ4", "1", "2", "3", "4"], "a": 7, "why": "ルータ1を1台経由するので2です。直接つながっているときが1、1台経由で2と数えます。"}, {"k": "エ", "q": "ネットワーク5あての「インタフェース」は。", "ch": ["E0", "E1", "直接", "ルータ1", "ルータ3", "ルータ4", "1", "2", "3", "4"], "a": 1, "why": "ネットワーク5に接しているのはルータ3。ルータ3はネットワーク2にもいるので、ネットワーク2につながる E1 から出します。"}, {"k": "オ", "q": "ネットワーク5あての「ゲートウェイ」は。", "ch": ["E0", "E1", "直接", "ルータ1", "ルータ3", "ルータ4", "1", "2", "3", "4"], "a": 4, "why": "次に渡す相手はルータ3です。"}, {"k": "カ", "q": "ネットワーク5あての「メトリック」は。", "ch": ["E0", "E1", "直接", "ルータ1", "ルータ3", "ルータ4", "1", "2", "3", "4"], "a": 7, "why": "ルータ3を1台経由するので2です。"}], "本文の答えは【ア】⓪　【イ】③　【ウ】⑦　【エ】①　【オ】④　【カ】⑦ です。STEP 2 の答え合わせと同じ内容です。");
+    window.Quiz.choice('bookBox', 'bookNote', [{"k": "ア", "q": "ネットワーク4あての「インタフェース」は。", "ch": ["E0", "E1", "直接", "ルータ1", "ルータ3", "ルータ4", "1", "2", "3", "4"], "a": 0, "why": "ルータ2から見ると、ネットワーク4へ向かう道は<strong>ネットワーク1側</strong>に出ていきます（ネットワーク1→ルータ4→ネットワーク3→ルータ1→ネットワーク4）。ネットワーク1につながる口は <span class=\"mono\">E0</span> です。"}, {"k": "イ", "q": "ネットワーク4あての「ゲートウェイ」は。", "ch": ["E0", "E1", "直接", "ルータ1", "ルータ3", "ルータ4", "1", "2", "3", "4"], "a": 5, "why": "ネットワーク4に接しているのは<strong>ルータ1</strong>ですが、ルータ1はルータ2のとなりにいません。ゲートウェイは<strong>すぐ次に渡す相手</strong>なので、となりの<strong>ルータ4</strong>です。ここを「ルータ1」としてしまうのが定番のまちがいです。"}, {"k": "ウ", "q": "ネットワーク4あての「メトリック」は。", "ch": ["E0", "E1", "直接", "ルータ1", "ルータ3", "ルータ4", "1", "2", "3", "4"], "a": 8, "why": "ルータ2 → ルータ4 → ルータ1 と<strong>3台</strong>のルータを通ります。表の3行目（ネットワーク3）が「ルータ4・2」であることと見比べると、1台増えて3になると分かります。"}, {"k": "エ", "q": "ネットワーク5あての「インタフェース」は。", "ch": ["E0", "E1", "直接", "ルータ1", "ルータ3", "ルータ4", "1", "2", "3", "4"], "a": 1, "why": "ネットワーク5に接しているのはルータ3。ルータ3はネットワーク2にもいるので、ネットワーク2につながる <span class=\"mono\">E1</span> から出します。"}, {"k": "オ", "q": "ネットワーク5あての「ゲートウェイ」は。", "ch": ["E0", "E1", "直接", "ルータ1", "ルータ3", "ルータ4", "1", "2", "3", "4"], "a": 4, "why": "ルータ3はルータ2のとなり（ネットワーク2でつながっている）なので、そのままルータ3に渡します。"}, {"k": "カ", "q": "ネットワーク5あての「メトリック」は。", "ch": ["E0", "E1", "直接", "ルータ1", "ルータ3", "ルータ4", "1", "2", "3", "4"], "a": 7, "why": "ルータ2 → ルータ3 の<strong>2台</strong>です。ネットワーク4（3台）と比べてみましょう。"}], "本文の答えは【ア】⓪　【イ】⑤　【ウ】⑧　【エ】①　【オ】④　【カ】⑦ です。STEP 2 の答え合わせと同じ内容です。");
   }
 
   function init() {
